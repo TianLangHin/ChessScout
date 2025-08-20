@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		24D549432E559889000B8554 /* ChessKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24D549422E559889000B8554 /* ChessKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		24527A492E5091FC0057D9D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24D549432E559889000B8554 /* ChessKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = ChessScout;
 			packageProductDependencies = (
+				24D549422E559889000B8554 /* ChessKit */,
 			);
 			productName = ChessScout;
 			productReference = 24527A382E5091FB0057D9D0 /* ChessScout.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 24527A2F2E5091FB0057D9D0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				24D549412E559889000B8554 /* XCRemoteSwiftPackageReference "chesskit-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24527A392E5091FB0057D9D0 /* Products */;
 			projectDirPath = "";
@@ -552,6 +561,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		24D549412E559889000B8554 /* XCRemoteSwiftPackageReference "chesskit-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/chesskit-app/chesskit-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		24D549422E559889000B8554 /* ChessKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24D549412E559889000B8554 /* XCRemoteSwiftPackageReference "chesskit-swift" */;
+			productName = ChessKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 24527A302E5091FB0057D9D0 /* Project object */;
 }
