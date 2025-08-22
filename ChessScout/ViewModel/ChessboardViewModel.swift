@@ -17,7 +17,7 @@ class ChessboardViewModel {
         self.model.makeMove(move: move)
     }
 
-    func setPosition(startpos: Position) {
-        self.model.setPosition(startpos: startpos)
+    func setPosition(position: Position) {
+        self.model.setPosition(position: position)
     }
 }

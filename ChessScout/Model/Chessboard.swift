@@ -56,8 +56,8 @@ class Chessboard {
         return true
     }
 
-    func setPosition(startpos: Position) {
-        self.board = Board(position: startpos)
-        self.pieceList = startpos.pieces.map({ ChessPiece(piece: $0) })
+    func setPosition(position: Position) {
+        self.board = Board(position: position)
+        self.pieceList = position.pieces.map({ ChessPiece(piece: $0) })
     }
 }

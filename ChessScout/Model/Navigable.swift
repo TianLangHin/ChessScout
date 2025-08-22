@@ -7,15 +7,14 @@
 
 import SwiftUI
 
-protocol Navigable<State, Transition>: View {
-    associatedtype State
+protocol Navigable<GameState, Transition>: View {
+    associatedtype GameState
     associatedtype Transition
     
-    func getState() -> State
+    func getState() -> GameState
+
+    mutating func setState(_: GameState)
 
     @discardableResult
-    func setState(state: State) -> Bool
-
-    @discardableResult
-    func makeTransition(transition: Transition) -> Bool
+    mutating func makeTransition(_: Transition) -> Bool
 }
