@@ -17,18 +17,22 @@ struct ChessboardView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                let step = min(geometry.size.width, geometry.size.height) / 8
-                let offset = -3*step - min(geometry.size.width, geometry.size.height) / 16
-                boardLayer(squareSize: step)
-                ForEach($board.model.pieceList) { $chessPiece in
-                    let stepsX = CGFloat(chessPiece.piece.square.rawValue % 8)
-                    let stepsY = CGFloat(7 - chessPiece.piece.square.rawValue / 8)
-                    ChessPieceView(chessPiece: $chessPiece)
-                        .frame(width: step, height: step)
-                        .offset(x: offset + stepsX * step, y: offset + stepsY * step)
+            VStack {
+                ZStack {
+                    let sideLength = min(geometry.size.width, geometry.size.height)
+                    let step = sideLength / 8
+                    let offset = -(3 * step + sideLength / 16)
+                    boardLayer(squareSize: step)
+                    ForEach($board.pieceList) { $chessPiece in
+                        let stepsX = CGFloat(chessPiece.squareNumber % 8)
+                        let stepsY = CGFloat(7 - chessPiece.squareNumber / 8)
+                        ChessPieceView(chessPiece: $chessPiece)
+                            .frame(width: step, height: step)
+                            .offset(x: offset + stepsX * step, y: offset + stepsY * step)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding()
     }
@@ -39,7 +43,7 @@ struct ChessboardView: View {
                 HStack(spacing: 0) {
                     ForEach(0..<8, id: \.self) { column in
                         Rectangle()
-                            .fill((row + column) % 2 == 0 ? darkSquare: lightSquare)
+                            .fill((row + column) % 2 == 0 ? darkSquare : lightSquare)
                             .frame(width: squareSize, height: squareSize)
                     }
                 }
@@ -52,11 +56,11 @@ struct ChessboardView: View {
 extension ChessboardView: Navigable {
     typealias GameState = Position
     typealias Transition = Move
-    
+
     func getState() -> GameState {
-        return self.board.model.board.position
+        return self.board.position
     }
-    
+
     mutating func setState(_ state: GameState) {
         self.board.setPosition(position: state)
     }

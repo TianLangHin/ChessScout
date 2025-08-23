@@ -12,4 +12,10 @@ struct ChessPiece: Identifiable {
     let id = UUID()
 
     var piece: Piece
+
+    var squareNumber: Int {
+        get {
+            self.piece.square.rawValue
+        }
+    }
 }

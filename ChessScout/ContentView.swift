@@ -12,33 +12,41 @@ struct ContentView: View {
 
     @State var moveText = ""
     @State var fenText = ""
+    @State var history: [Position] = []
 
     @State var boardView = ChessboardView()
 
     var body: some View {
         VStack {
+            Text("ChessScout")
+                .font(.title)
+                .padding()
             boardView
-            Spacer()
-            TextField("Enter move here", text: $moveText)
-                .textInputAutocapitalization(.never)
-            Button {
-                let move = Move(san: moveText, position: boardView.getState())
-                if let validMove = move {
-                    boardView.makeTransition(validMove)
+            VStack {
+                TextField("Enter move here", text: $moveText)
+                    .textInputAutocapitalization(.never)
+                    .padding()
+                HStack {
+                    Button {
+                        let move = Move(san: moveText, position: boardView.getState())
+                        if let validMove = move {
+                            boardView.makeTransition(validMove)
+                            moveText = ""
+                            history.append(boardView.getState())
+                        }
+                    } label: {
+                        Text("Make Move")
+                    }
+                    Spacer()
+                    Button {
+                        if history.popLast() != nil {
+                            boardView.setState(history.last ?? .standard)
+                        }
+                    } label: {
+                        Text("Undo Move")
+                    }
                 }
-            } label: {
-                Text("Make Move")
-            }
-            Spacer()
-            TextField("Enter FEN here instead", text: $fenText)
-                .textInputAutocapitalization(.never)
-            Button {
-                let pos = Position(fen: fenText)
-                if let validFen = pos {
-                    boardView.setState(validFen)
-                }
-            } label: {
-                Text("Set FEN")
+                Spacer()
             }
         }
         .padding()

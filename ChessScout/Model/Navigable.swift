@@ -10,7 +10,7 @@ import SwiftUI
 protocol Navigable<GameState, Transition>: View {
     associatedtype GameState
     associatedtype Transition
-    
+
     func getState() -> GameState
 
     mutating func setState(_: GameState)

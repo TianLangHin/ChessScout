@@ -12,6 +12,19 @@ import SwiftUI
 class ChessboardViewModel {
     var model = Chessboard()
 
+    var position: Position {
+        self.model.board.position
+    }
+
+    var pieceList: [ChessPiece] {
+        get {
+            self.model.pieceList
+        }
+        set {
+            self.model.pieceList = newValue
+        }
+    }
+
     @discardableResult
     func makeMove(move: Move) -> Bool {
         self.model.makeMove(move: move)
