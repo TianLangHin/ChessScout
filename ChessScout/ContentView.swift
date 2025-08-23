@@ -25,15 +25,13 @@ struct ContentView: View {
             VStack {
                 TextField("Enter move here", text: $moveText)
                     .textInputAutocapitalization(.never)
+                    .onSubmit {
+                        makeMove()
+                    }
                     .padding()
                 HStack {
                     Button {
-                        let move = Move(san: moveText, position: boardView.getState())
-                        if let validMove = move {
-                            boardView.makeTransition(validMove)
-                            moveText = ""
-                            history.append(boardView.getState())
-                        }
+                        makeMove()
                     } label: {
                         Text("Make Move")
                     }
@@ -50,6 +48,15 @@ struct ContentView: View {
             }
         }
         .padding()
+    }
+
+    func makeMove() {
+        let move = Move(san: moveText, position: boardView.getState())
+        if let validMove = move {
+            boardView.makeTransition(validMove)
+            moveText = ""
+            history.append(boardView.getState())
+        }
     }
 }
 

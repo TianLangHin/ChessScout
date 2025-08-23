@@ -9,5 +9,5 @@ protocol APIFetchable {
     associatedtype Parameters
     associatedtype FetchedData
     
-    func fetch(_ parameters: Parameters) -> FetchedData?
+    func fetch(_ parameters: Parameters) async -> FetchedData?
 }

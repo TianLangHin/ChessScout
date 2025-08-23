@@ -1,0 +1,73 @@
+//
+//  LichessOpeningFetcher.swift
+//  ChessScout
+//
+//  Created by Tian Lang Hin on 24/8/2025.
+//
+
+import ChessKit
+import Foundation
+
+struct LichessOpeningFetcher: APIFetchable {
+    typealias Parameters = LichessOpeningQuery
+    typealias FetchedData = LichessOpeningData
+
+    func fetch(_ parameters: Parameters) async -> FetchedData? {
+        let db = parameters.openingDatabase.rawValue
+        let endpoint = "https://explorer.lichess.ovh/\(db)"
+        let queryItems = switch parameters.openingPath {
+        case .moves(let moveList):
+            URLQueryItem(name: "play", value: moveList.map({ $0.uci() }).joined(separator: ","))
+        case .position(let position):
+            URLQueryItem(name: "fen", value: position.fen)
+        }
+        var requestUrl = URLComponents(string: endpoint)!
+        requestUrl.queryItems = [queryItems]
+
+        let jsonDecoder = JSONDecoder()
+        let response = try? await URLSession.shared.data(from: requestUrl.url!)
+        guard let (rawData, _) = response else {
+            return nil
+        }
+        guard let data = try? jsonDecoder.decode(FetchedData.self, from: rawData) else {
+            return nil
+        }
+        return data
+    }
+}
+
+struct LichessOpeningData: Decodable {
+    let white: Int
+    let draws: Int
+    let black: Int
+    let moves: [LichessOpeningData.MoveStats]
+    let opening: LichessOpeningData.OpeningInfo
+
+    public struct MoveStats: Decodable {
+        let white: Int
+        let draws: Int
+        let black: Int
+        let san: String
+        let averageRating: Int
+    }
+
+    public struct OpeningInfo: Decodable {
+        let eco: String
+        let name: String
+    }
+}
+
+struct LichessOpeningQuery {
+    let openingPath: OpeningPath
+    let openingDatabase: OpeningDatabase
+}
+
+enum OpeningPath {
+    case moves([Move])
+    case position(Position)
+}
+
+enum OpeningDatabase: String {
+    case masters = "masters"
+    case casual = "lichess"
+}
