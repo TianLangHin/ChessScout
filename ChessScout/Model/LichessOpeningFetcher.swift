@@ -17,12 +17,14 @@ struct LichessOpeningFetcher: APIFetchable {
         let endpoint = "https://explorer.lichess.ovh/\(db)"
         let queryItems = switch parameters.openingPath {
         case .moves(let moveList):
-            URLQueryItem(name: "play", value: moveList.map({ $0.uci() }).joined(separator: ","))
+            moveList.isEmpty ? nil : URLQueryItem(name: "play", value: moveList.map({ $0.uci() }).joined(separator: ","))
         case .position(let position):
             URLQueryItem(name: "fen", value: position.fen)
         }
         var requestUrl = URLComponents(string: endpoint)!
-        requestUrl.queryItems = [queryItems]
+        if let items = queryItems {
+            requestUrl.queryItems = [items]
+        }
 
         let jsonDecoder = JSONDecoder()
         let response = try? await URLSession.shared.data(from: requestUrl.url!)
@@ -41,7 +43,7 @@ struct LichessOpeningData: Decodable {
     let draws: Int
     let black: Int
     let moves: [LichessOpeningData.MoveStats]
-    let opening: LichessOpeningData.OpeningInfo
+    let opening: LichessOpeningData.OpeningInfo?
 
     public struct MoveStats: Decodable {
         let white: Int
@@ -58,16 +60,17 @@ struct LichessOpeningData: Decodable {
 }
 
 struct LichessOpeningQuery {
-    let openingPath: OpeningPath
-    let openingDatabase: OpeningDatabase
+    let openingPath: LichessOpeningQuery.OpeningPath
+    let openingDatabase: LichessOpeningQuery.OpeningDatabase
+
+    enum OpeningPath {
+        case moves([Move])
+        case position(Position)
+    }
+
+    enum OpeningDatabase: String {
+        case masters = "masters"
+        case casual = "lichess"
+    }
 }
 
-enum OpeningPath {
-    case moves([Move])
-    case position(Position)
-}
-
-enum OpeningDatabase: String {
-    case masters = "masters"
-    case casual = "lichess"
-}
