@@ -9,35 +9,42 @@ import ChessKit
 import SwiftUI
 
 struct OpeningExplorerView: View {
-    
+
     let openingFetcher = LichessOpeningFetcher()
-    
+
     @State var database: LichessOpeningQuery.OpeningDatabase = .masters
     @State var path: [(Move, Position)] = []
     @State var boardView = ChessboardView()
     @State var openings: [WrappedOpeningMoveStats] = []
-    
+
     var body: some View {
         VStack {
             boardView
-            List {
-                ForEach(openings) { opening in
-                    let moveStats = opening.moveStats
-                    Button {
-                        let move = Move(san: moveStats.san, position: boardView.getState())!
-                        if boardView.makeTransition(move) {
-                            path.append((move, boardView.getState()))
-                            openings = []
-                            updateMoveList()
-                        }
-                    } label: {
-                        HStack {
-                            Text("\(moveStats.san)")
-                                .padding()
-                            Spacer()
-                            VStack {
-                                Text("\(moveStats.averageRating)")
-                                Text("\(moveStats.white)/\(moveStats.draws)/\(moveStats.black)")
+            if openings.isEmpty {
+                List {
+                    Text("Loading...")
+                }
+            } else {
+                List {
+                    ForEach(openings) { opening in
+                        let moveStats = opening.moveStats
+                        Button {
+                            if let move = Move(san: moveStats.san, position: boardView.getState()) {
+                                if boardView.makeTransition(move) {
+                                    path.append((move, boardView.getState()))
+                                    openings = []
+                                    updateMoveList()
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text("\(moveStats.san)")
+                                    .padding()
+                                Spacer()
+                                VStack {
+                                    Text("\(moveStats.averageRating)")
+                                    Text("\(moveStats.white)/\(moveStats.draws)/\(moveStats.black)")
+                                }
                             }
                         }
                     }
