@@ -9,33 +9,36 @@ import ChessKit
 import SwiftUI
 
 struct OpeningExplorerView: View {
-
+    typealias GameState = (Move, Position)
+    typealias WrappedGameState = IdWrapper<GameState>
+    typealias WrappedStats = IdWrapper<LichessOpeningData.MoveStats>
+    
     let openingFetcher = LichessOpeningFetcher()
-
+    
     @State var database: LichessOpeningQuery.OpeningDatabase = .masters
-    @State var path: [(Move, Position)] = []
+    @State var history: [WrappedGameState] = []
+    @State var future: [WrappedGameState] = []
+    @State var openings: [WrappedStats] = []
     @State var boardView = ChessboardView()
-    @State var openings: [WrappedOpeningMoveStats] = []
 
     var body: some View {
         VStack {
             boardView
+            HStack {
+                Text("History:")
+                historyLayer()
+            }
+            .padding()
             if openings.isEmpty {
                 List {
-                    Text("Loading...")
+                    Text("Loading Opening Data...")
                 }
             } else {
                 List {
                     ForEach(openings) { opening in
-                        let moveStats = opening.moveStats
+                        let moveStats = opening.data
                         Button {
-                            if let move = Move(san: moveStats.san, position: boardView.getState()) {
-                                if boardView.makeTransition(move) {
-                                    path.append((move, boardView.getState()))
-                                    openings = []
-                                    updateMoveList()
-                                }
-                            }
+                            makeMove(moveSan: moveStats.san)
                         } label: {
                             HStack {
                                 Text("\(moveStats.san)")
@@ -51,15 +54,15 @@ struct OpeningExplorerView: View {
                 }
             }
             HStack {
-                Spacer()
                 Button {
-                    if path.popLast() != nil {
-                        openings = []
-                        updateMoveList()
-                        boardView.setState(path.last?.1 ?? .standard)
-                    }
+                    moveBackward()
                 } label: {
-                    Text("Undo Move")
+                    Image(systemName: "chevron.left")
+                }
+                Button {
+                    moveForward()
+                } label: {
+                    Image(systemName: "chevron.right")
                 }
             }
             .padding()
@@ -69,21 +72,111 @@ struct OpeningExplorerView: View {
         })
     }
 
+    private func historyLayer() -> some View {
+        ScrollViewReader { scrollView in
+            ScrollView(.horizontal) {
+                HStack {
+                    ForEach(history.dropLast()) { gameState in
+                        Button {
+                            setState(gameState: gameState)
+                        } label: {
+                            Text("\(gameState.data.0)")
+                                .foregroundStyle(.red)
+                        }
+                    }
+                    if let currentState = history.last {
+                        Button {
+                            setState(gameState: currentState)
+                        } label: {
+                            Text("\(currentState.data.0)")
+                                .foregroundStyle(.green)
+                        }
+                        .id(0)
+                    }
+                    ForEach(future.reversed()) { gameState in
+                        Button {
+                            setState(gameState: gameState)
+                        } label: {
+                            Text("\(gameState.data.0)")
+                                .foregroundStyle(.blue)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .onChange(of: history.count) {
+                scrollView.scrollTo(0)
+            }
+        }
+    }
+
+    private func makeMove(moveSan: String, clearFuture: Bool = true) {
+        if let move = Move(san: moveSan, position: boardView.getState()) {
+            if boardView.makeTransition(move) {
+                let state = (move, boardView.getState())
+                history.append(WrappedGameState(data: state))
+                if move == future.last?.data.0 {
+                    let _ = future.popLast()
+                } else if clearFuture {
+                    future.removeAll()
+                }
+                openings = []
+                updateMoveList()
+            }
+        }
+    }
+
+    private func moveForward() {
+        if let futureState = future.popLast() {
+            openings = []
+            updateMoveList()
+            makeMove(moveSan: futureState.data.0.san, clearFuture: false)
+        }
+    }
+
+    private func moveBackward() {
+        if let undoneState = history.popLast() {
+            openings = []
+            future.append(undoneState)
+            updateMoveList()
+            boardView.setState(history.last?.data.1 ?? .standard)
+        }
+    }
+    
     private func updateMoveList() {
         let params = LichessOpeningQuery(
-            openingPath: .moves(path.map({ $0.0 })),
+            openingPath: .moves(history.map({ $0.data.0 })),
             openingDatabase: database)
         Task {
             let rawOpenings = await openingFetcher.fetch(params)?.moves ?? []
-            openings = rawOpenings.map({ WrappedOpeningMoveStats(moveStats: $0) })
+            openings = rawOpenings.map({ WrappedStats(data: $0) })
         }
     }
-}
 
-struct WrappedOpeningMoveStats: Identifiable {
-    let id = UUID()
-
-    var moveStats: LichessOpeningData.MoveStats
+    private func setState(gameState: WrappedGameState) {
+        let pastStop = history.first(where: { $0.id == gameState.id })
+        let futureStop = future.first(where: { $0.id == gameState.id })
+        if let snapshot = pastStop {
+            while let shiftedElement = history.popLast() {
+                if shiftedElement.id == snapshot.id {
+                    history.append(shiftedElement)
+                    break
+                }
+                future.append(shiftedElement)
+            }
+        } else if let snapshot = futureStop {
+             while let shiftedElement = future.popLast() {
+                history.append(shiftedElement)
+                if shiftedElement.id == snapshot.id {
+                    break
+                }
+            }
+        } else {
+            return
+        }
+        updateMoveList()
+        boardView.setState(gameState.data.1)
+    }
 }
 
 #Preview {
