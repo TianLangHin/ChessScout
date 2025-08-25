@@ -14,24 +14,36 @@ struct OpeningExplorerView: View {
     typealias WrappedStats = IdWrapper<LichessOpeningData.MoveStats>
     
     let openingFetcher = LichessOpeningFetcher()
-    
-    @State var database: LichessOpeningQuery.OpeningDatabase = .masters
+
+    @State var useMastersDatabase = true
     @State var history: [WrappedGameState] = []
     @State var future: [WrappedGameState] = []
     @State var openings: [WrappedStats] = []
     @State var boardView = ChessboardView()
 
+    @State var isLoaded = false
+
     var body: some View {
         VStack {
             boardView
             HStack {
-                Text("History:")
+                Button {
+                    useMastersDatabase.toggle()
+                } label: {
+                    Text(useMastersDatabase ? "Masters" : "Casual")
+                }
+                .buttonStyle(.bordered)
+                .frame(width: 90)
                 historyLayer()
             }
             .padding()
-            if openings.isEmpty {
+            if !isLoaded {
                 List {
                     Text("Loading Opening Data...")
+                }
+            } else if openings.isEmpty {
+                List {
+                    Text("This line was not found in the database.")
                 }
             } else {
                 List {
@@ -70,11 +82,14 @@ struct OpeningExplorerView: View {
         .onAppear(perform: {
             updateMoveList()
         })
+        .onChange(of: useMastersDatabase, {
+            updateMoveList()
+        })
     }
 
     private func historyLayer() -> some View {
         ScrollViewReader { scrollView in
-            ScrollView(.horizontal) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(history.dropLast()) { gameState in
                         Button {
@@ -102,7 +117,6 @@ struct OpeningExplorerView: View {
                         }
                     }
                 }
-                .padding()
             }
             .onChange(of: history.count) {
                 scrollView.scrollTo(0)
@@ -120,7 +134,6 @@ struct OpeningExplorerView: View {
                 } else if clearFuture {
                     future.removeAll()
                 }
-                openings = []
                 updateMoveList()
             }
         }
@@ -128,7 +141,6 @@ struct OpeningExplorerView: View {
 
     private func moveForward() {
         if let futureState = future.popLast() {
-            openings = []
             updateMoveList()
             makeMove(moveSan: futureState.data.0.san, clearFuture: false)
         }
@@ -136,7 +148,6 @@ struct OpeningExplorerView: View {
 
     private func moveBackward() {
         if let undoneState = history.popLast() {
-            openings = []
             future.append(undoneState)
             updateMoveList()
             boardView.setState(history.last?.data.1 ?? .standard)
@@ -144,12 +155,15 @@ struct OpeningExplorerView: View {
     }
     
     private func updateMoveList() {
+        let database: LichessOpeningQuery.OpeningDatabase = useMastersDatabase ? .masters : .casual
         let params = LichessOpeningQuery(
             openingPath: .moves(history.map({ $0.data.0 })),
             openingDatabase: database)
         Task {
+            isLoaded = false
             let rawOpenings = await openingFetcher.fetch(params)?.moves ?? []
             openings = rawOpenings.map({ WrappedStats(data: $0) })
+            isLoaded = true
         }
     }
 

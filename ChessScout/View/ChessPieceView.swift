@@ -13,9 +13,6 @@ struct ChessPieceView: View {
     var body: some View {
         let colour = chessPiece.piece.color.rawValue
         let pieceType = chessPiece.piece.kind == .pawn ? "p" : chessPiece.piece.kind.notation.lowercased()
-        let url = URL(string: "https://www.chess.com/chess-themes/pieces/neo/300/\(colour)\(pieceType).png")
-        AsyncImage(url: url) { result in
-            result.image?.resizable().scaledToFill()
-        }
+        Image("\(colour)\(pieceType)").resizable().scaledToFill()
     }
 }
