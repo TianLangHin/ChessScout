@@ -9,7 +9,9 @@ import SwiftUI
 
 struct OpeningStatView: View {
     @State var openingStat: LichessOpeningData.MoveStats
-    
+
+    let visibleThreshold = 8
+
     var body: some View {
         let (white, draws, black) = intuitivePercentage(openingStat)
         GeometryReader { proxy in
@@ -25,25 +27,31 @@ struct OpeningStatView: View {
                             Rectangle()
                                 .fill(.white)
                                 .frame(width: CGFloat(width * white / 100), height: height)
-                            Text("\(white)%")
-                                .foregroundStyle(.black)
-                                .font(.footnote)
+                            if white > visibleThreshold {
+                                Text("\(white)%")
+                                    .foregroundStyle(.black)
+                                    .font(.footnote)
+                            }
                         }
                         ZStack {
                             Rectangle()
                                 .fill(.gray)
                                 .frame(width: CGFloat(width * draws / 100), height: height)
-                            Text("\(draws)%")
-                                .foregroundStyle(.black)
-                                .font(.footnote)
+                            if draws > visibleThreshold {
+                                Text("\(draws)%")
+                                    .foregroundStyle(.black)
+                                    .font(.footnote)
+                            }
                         }
                         ZStack {
                             Rectangle()
                                 .fill(.black)
                                 .frame(width: CGFloat(width * black / 100), height: height)
-                            Text("\(black)%")
-                                .foregroundStyle(.white)
-                                .font(.footnote)
+                            if black > visibleThreshold {
+                                Text("\(black)%")
+                                    .foregroundStyle(.white)
+                                    .font(.footnote)
+                            }
                         }
                     }
                     .border(.black)
@@ -62,7 +70,7 @@ struct OpeningStatView: View {
         var drawRatio = 100 * draws / totalPlays
         var blackRatio = 100 * black / totalPlays
         let numeratorSum = whiteRatio + drawRatio + blackRatio
-        if whiteRatio + drawRatio + blackRatio != 100 {
+        if numeratorSum != 100 {
             let highest = max(whiteRatio, max(drawRatio, blackRatio))
             switch highest {
             case whiteRatio:
