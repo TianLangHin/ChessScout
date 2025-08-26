@@ -52,15 +52,8 @@ struct OpeningExplorerView: View {
                         Button {
                             makeMove(moveSan: moveStats.san)
                         } label: {
-                            HStack {
-                                Text("\(moveStats.san)")
-                                    .padding()
-                                Spacer()
-                                VStack {
-                                    Text("\(moveStats.averageRating)")
-                                    Text("\(moveStats.white)/\(moveStats.draws)/\(moveStats.black)")
-                                }
-                            }
+                            OpeningStatView(openingStat: moveStats)
+                                .frame(maxWidth: .infinity)
                         }
                     }
                 }
@@ -148,8 +141,8 @@ struct OpeningExplorerView: View {
 
     private func moveBackward() {
         if let undoneState = history.popLast() {
-            future.append(undoneState)
             updateMoveList()
+            future.append(undoneState)
             boardView.setState(history.last?.data.1 ?? .standard)
         }
     }
