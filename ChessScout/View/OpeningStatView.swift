@@ -10,80 +10,41 @@ import SwiftUI
 struct OpeningStatView: View {
     @State var openingStat: LichessOpeningData.MoveStats
 
-    let visibleThreshold = 8
+    @State var viewModel = OpeningStatViewModel()
 
     var body: some View {
-        let (white, draws, black) = intuitivePercentage(openingStat)
-        GeometryReader { proxy in
+        let (white, draws, black) = viewModel.intuitivePercentage(openingStat)
+        GeometryReader { outerProxy in
             HStack {
                 Text("\(openingStat.san)")
                     .frame(alignment: .center)
                 Spacer()
-                GeometryReader { geometry in
-                    let width = Int(geometry.size.width)
-                    let height = geometry.size.height
+                GeometryReader { innerProxy in
                     HStack(spacing: 0) {
-                        ZStack {
-                            Rectangle()
-                                .fill(.white)
-                                .frame(width: CGFloat(width * white / 100), height: height)
-                            if white > visibleThreshold {
-                                Text("\(white)%")
-                                    .foregroundStyle(.black)
-                                    .font(.footnote)
-                            }
-                        }
-                        ZStack {
-                            Rectangle()
-                                .fill(.gray)
-                                .frame(width: CGFloat(width * draws / 100), height: height)
-                            if draws > visibleThreshold {
-                                Text("\(draws)%")
-                                    .foregroundStyle(.black)
-                                    .font(.footnote)
-                            }
-                        }
-                        ZStack {
-                            Rectangle()
-                                .fill(.black)
-                                .frame(width: CGFloat(width * black / 100), height: height)
-                            if black > visibleThreshold {
-                                Text("\(black)%")
-                                    .foregroundStyle(.white)
-                                    .font(.footnote)
-                            }
-                        }
+                        resultRectangle(bg: .white, fg: .black, ratio: white, geometry: innerProxy)
+                        resultRectangle(bg: .gray, fg: .black, ratio: draws, geometry: innerProxy)
+                        resultRectangle(bg: .black, fg: .white, ratio: black, geometry: innerProxy)
                     }
                     .border(.black)
                 }
-                .frame(width: 0.8 * proxy.size.width)
+                .frame(width: 0.8 * outerProxy.size.width)
             }
         }
     }
 
-    func intuitivePercentage(_ openingStat: LichessOpeningData.MoveStats) -> (Int, Int, Int) {
-        let white = openingStat.white
-        let draws = openingStat.draws
-        let black = openingStat.black
-        let totalPlays = white + draws + black
-        var whiteRatio = 100 * white / totalPlays
-        var drawRatio = 100 * draws / totalPlays
-        var blackRatio = 100 * black / totalPlays
-        let numeratorSum = whiteRatio + drawRatio + blackRatio
-        if numeratorSum != 100 {
-            let highest = max(whiteRatio, max(drawRatio, blackRatio))
-            switch highest {
-            case whiteRatio:
-                whiteRatio += 100 - numeratorSum
-            case drawRatio:
-                drawRatio += 100 - numeratorSum
-            case blackRatio:
-                blackRatio += 100 - numeratorSum
-            default:
-                break
+    func resultRectangle(bg: Color, fg: Color, ratio: Int, geometry: GeometryProxy) -> some View {
+        ZStack {
+            let width = Int(geometry.size.width)
+            let height = geometry.size.height
+            Rectangle()
+                .fill(bg)
+                .frame(width: CGFloat(width * ratio / 100), height: height)
+            if ratio > viewModel.visibleThreshold {
+                Text("\(ratio)%")
+                    .foregroundStyle(fg)
+                    .font(.footnote)
             }
         }
-        return (whiteRatio, drawRatio, blackRatio)
     }
 }
 
