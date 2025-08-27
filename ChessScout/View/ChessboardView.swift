@@ -65,6 +65,10 @@ extension ChessboardView: Navigable {
         self.board.setPosition(position: state)
     }
 
+    mutating func resetState() {
+        self.board.setPosition(position: .standard)
+    }
+
     @discardableResult
     mutating func makeTransition(_ move: Transition) -> Bool {
         withAnimation(.linear(duration: 0.25)) {

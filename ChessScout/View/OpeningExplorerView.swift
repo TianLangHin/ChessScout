@@ -82,6 +82,7 @@ struct OpeningExplorerView: View {
             .padding()
         }
         .onAppear(perform: {
+            boardView.resetState()
             updateMoveList()
         })
         .onChange(of: useMastersDatabase, {

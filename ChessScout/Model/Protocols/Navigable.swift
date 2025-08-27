@@ -15,6 +15,8 @@ protocol Navigable<GameState, Transition>: View {
 
     mutating func setState(_: GameState)
 
+    mutating func resetState()
+
     @discardableResult
     mutating func makeTransition(_: Transition) -> Bool
 }
