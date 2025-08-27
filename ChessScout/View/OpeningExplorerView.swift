@@ -134,17 +134,16 @@ struct OpeningExplorerView: View {
 
     private func moveForward() {
         if let futureState = future.popLast() {
-            updateMoveList()
             makeMove(moveSan: futureState.data.0.san, clearFuture: false)
         }
     }
 
     private func moveBackward() {
         if let undoneState = history.popLast() {
-            updateMoveList()
             future.append(undoneState)
             boardView.setState(history.last?.data.1 ?? .standard)
         }
+        updateMoveList()
     }
     
     private func updateMoveList() {

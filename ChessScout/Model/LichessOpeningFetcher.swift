@@ -31,9 +31,14 @@ struct LichessOpeningFetcher: APIFetchable {
         guard let (rawData, _) = response else {
             return nil
         }
-        guard let data = try? jsonDecoder.decode(FetchedData.self, from: rawData) else {
+        guard var data = try? jsonDecoder.decode(FetchedData.self, from: rawData) else {
             return nil
         }
+        data.moves.sort(by: { m1, m2 in
+            let plays1 = m1.white + m1.draws + m1.black
+            let plays2 = m2.white + m2.draws + m2.black
+            return plays1 > plays2
+        })
         return data
     }
 }
@@ -42,7 +47,7 @@ struct LichessOpeningData: Decodable {
     let white: Int
     let draws: Int
     let black: Int
-    let moves: [LichessOpeningData.MoveStats]
+    var moves: [LichessOpeningData.MoveStats]
     let opening: LichessOpeningData.OpeningInfo?
 
     public struct MoveStats: Decodable {

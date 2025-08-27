@@ -10,9 +10,22 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("ChessScout")
-            .font(.title)
-        OpeningExplorerView()
+        NavigationStack {
+            VStack(spacing: 0) {
+                Text("ChessScout")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                Image("wr")
+                VStack(alignment: .leading) {
+                    NavigationLink("Opening Explorer") {
+                        OpeningExplorerView()
+                            .navigationTitle("Opening Explorer")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+            }
+        }
     }
 }
 
