@@ -47,16 +47,25 @@ struct OpeningExplorerView: View {
                 }
             } else {
                 List {
-                    ForEach(openings) { opening in
-                        let moveStats = opening.data
-                        Button {
-                            makeMove(moveSan: moveStats.san)
-                        } label: {
-                            OpeningStatView(openingStat: moveStats)
-                                .frame(maxWidth: .infinity)
+                    Section {
+                        ForEach(openings) { opening in
+                            let moveStats = opening.data
+                            Button {
+                                makeMove(moveSan: moveStats.san)
+                            } label: {
+                                OpeningStatView(openingStat: moveStats)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Text("Move")
+                            Spacer()
+                            Text("White win / Draw / Black win")
                         }
                     }
                 }
+                .listStyle(.grouped)
             }
             HStack {
                 Button {
