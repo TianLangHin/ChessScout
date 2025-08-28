@@ -27,7 +27,10 @@ struct LichessOpeningFetcher: APIFetchable {
         }
 
         let jsonDecoder = JSONDecoder()
-        let response = try? await URLSession.shared.data(from: requestUrl.url!)
+        guard let validUrl = requestUrl.url else {
+            return nil
+        }
+        let response = try? await URLSession.shared.data(from: validUrl)
         guard let (rawData, _) = response else {
             return nil
         }
