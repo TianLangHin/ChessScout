@@ -9,6 +9,10 @@ import ChessKit
 import SwiftUI
 
 struct ContentView: View {
+
+    typealias GameState = GameRouterViewModel.Indicator
+    @State var gameRouter = GameRouterViewModel()
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -16,12 +20,23 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 Image("wr")
-                VStack(alignment: .leading) {
+                VStack(alignment: .center) {
                     NavigationLink("Opening Explorer") {
                         OpeningExplorerView()
                             .navigationTitle("Opening Explorer")
                     }
                     .buttonStyle(.borderedProminent)
+                    NavigationStack(path: $gameRouter.gameStack) {
+                        Button {
+                            gameRouter.gameStack.append(.select)
+                        } label: {
+                            Text("Start Game")
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    .navigationDestination(for: GameState.self) { indicator in
+                        gameRouter.getView(indicator, path: $gameRouter.gameStack)
+                    }
                 }
                 .padding()
             }
