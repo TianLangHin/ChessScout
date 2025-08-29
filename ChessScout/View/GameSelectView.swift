@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct GameSelectView: View {
-
     @EnvironmentObject var openingLines: OpeningLinesViewModel
     @EnvironmentObject var favouriteOpenings: FavouriteOpeningsViewModel
 
@@ -39,16 +38,16 @@ struct GameSelectView: View {
                 if usingFavourites || !selection.allSatisfy({ !$0 }) {
                     disableProgression = true
                     Task {
-                        var bookList: [OpeningBook] = []
-                        for i in 0..<selection.count {
-                            let book = OpeningBook.from(number: i)
-                            if selection[i] && book != nil {
-                                bookList.append(book!)
-                            }
-                        }
                         if usingFavourites {
-                            await openingLines.loadOpenings(favourites: favouriteOpenings.favourites)
+                            await openingLines.loadOpenings(favourites: favouriteOpenings.openings)
                         } else {
+                            var bookList: [OpeningBook] = []
+                            for i in 0..<selection.count {
+                                let book = OpeningBook.from(number: i)
+                                if selection[i] && book != nil {
+                                    bookList.append(book!)
+                                }
+                            }
                             await openingLines.loadOpenings(ecos: bookList)
                         }
                         path.append(.game)

@@ -8,10 +8,17 @@
 import SwiftUI
 
 class FavouriteOpeningsViewModel: ObservableObject {
-    @Published var favourites: [NamedOpeningLine]
-    
+    @Published var favourites: FavouriteOpenings
+
+    var openings: [NamedOpeningLine] {
+        self.favourites.openings
+    }
+
     init() {
-        // TODO: Implement loading from UserDefaults here
-        self.favourites = []
+        self.favourites = FavouriteOpenings.readFromStore() ?? FavouriteOpenings(openings: [])
+    }
+
+    func save() {
+        self.favourites.saveToStore()
     }
 }

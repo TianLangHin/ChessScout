@@ -6,6 +6,6 @@
 //
 
 protocol Saveable: Codable {
-    func read() -> Self
-    func save(_: Self)
+    static func readFromStore() -> Self?
+    func saveToStore()
 }

@@ -13,8 +13,8 @@ struct ContentView: View {
     typealias GameState = GameRouterViewModel.Indicator
     @State var gameRouter = GameRouterViewModel()
 
-    @State var openingLines = OpeningLinesViewModel()
-    @State var favouriteOpenings = FavouriteOpeningsViewModel()
+    @ObservedObject var openingLines = OpeningLinesViewModel()
+    @ObservedObject var favouriteOpenings = FavouriteOpeningsViewModel()
 
     var body: some View {
         NavigationStack {
