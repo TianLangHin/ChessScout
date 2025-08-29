@@ -9,8 +9,8 @@ import ChessKit
 import Foundation
 
 struct OpeningNamesFetcher: APIFetchable {
-    typealias Parameters = OpeningNamesFetcher.OpeningBook
-    typealias FetchedData = [OpeningNamesFetcher.NamedOpeningLine]
+    typealias Parameters = OpeningBook
+    typealias FetchedData = [NamedOpeningLine]
 
     func fetch(_ openingBook: Parameters) async -> FetchedData? {
         let url = "https://raw.githubusercontent.com/lichess-org/chess-openings/refs/heads/master/\(openingBook).tsv"
@@ -39,32 +39,49 @@ struct OpeningNamesFetcher: APIFetchable {
                 return NamedOpeningLine(eco: eco, line: line, moves: sequence)
             })
     }
+}
 
-    enum OpeningBook: String {
-        case a, b, c, d, e
-    }
+enum OpeningBook: String {
+    case a, b, c, d, e
 
-    struct NamedOpeningLine {
-        let eco: String
-        let line: String
-        let moves: [String]
-
-        func makePlayableLine(position: Position = .standard) -> [Move]? {
-            var moveList: [Move] = []
-            var board = Board(position: position)
-            for moveString in self.moves {
-                guard let validMove = Move(san: moveString, position: board.position) else {
-                    return nil
-                }
-                guard let resultantMove = board.move(pieceAt: validMove.start, to: validMove.end) else {
-                    return nil
-                }
-                if let promotedPiece = validMove.promotedPiece {
-                    board.completePromotion(of: resultantMove, to: promotedPiece.kind)
-                }
-                moveList.append(validMove)
-            }
-            return moveList
+    static func from(number: Int) -> Self? {
+        switch number {
+        case 0:
+            return .a
+        case 1:
+            return .b
+        case 2:
+            return .c
+        case 3:
+            return .d
+        case 4:
+            return .e
+        default:
+            return nil
         }
+    }
+}
+
+struct NamedOpeningLine {
+    let eco: String
+    let line: String
+    let moves: [String]
+
+    func makePlayableLine(position: Position = .standard) -> [Move]? {
+        var moveList: [Move] = []
+        var board = Board(position: position)
+        for moveString in self.moves {
+            guard let validMove = Move(san: moveString, position: board.position) else {
+                return nil
+            }
+            guard let resultantMove = board.move(pieceAt: validMove.start, to: validMove.end) else {
+                return nil
+            }
+            if let promotedPiece = validMove.promotedPiece {
+                board.completePromotion(of: resultantMove, to: promotedPiece.kind)
+            }
+            moveList.append(validMove)
+        }
+        return moveList
     }
 }

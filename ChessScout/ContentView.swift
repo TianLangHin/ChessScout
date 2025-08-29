@@ -13,6 +13,9 @@ struct ContentView: View {
     typealias GameState = GameRouterViewModel.Indicator
     @State var gameRouter = GameRouterViewModel()
 
+    @State var openingLines = OpeningLinesViewModel()
+    @State var favouriteOpenings = FavouriteOpeningsViewModel()
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -35,7 +38,10 @@ struct ContentView: View {
                         .buttonStyle(.borderedProminent)
                     }
                     .navigationDestination(for: GameState.self) { indicator in
-                        gameRouter.getView(indicator, path: $gameRouter.gameStack)
+                        gameRouter
+                            .getView(indicator, path: $gameRouter.gameStack)
+                            .environmentObject(openingLines)
+                            .environmentObject(favouriteOpenings)
                     }
                 }
                 .padding()

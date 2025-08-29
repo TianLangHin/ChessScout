@@ -9,46 +9,68 @@ import SwiftUI
 
 struct GameSelectView: View {
 
-    let openingNamesFetcher = OpeningNamesFetcher()
+    @EnvironmentObject var openingLines: OpeningLinesViewModel
+    @EnvironmentObject var favouriteOpenings: FavouriteOpeningsViewModel
 
     @Binding var path: [GameRouterViewModel.Indicator]
-    @State var openings: [OpeningNamesFetcher.NamedOpeningLine] = []
-    @State var index: Int = 0
-    @State var chessBoard = ChessboardView()
+    @State var openings: [NamedOpeningLine] = []
+    
+    @State var usingFavourites = false
+    @State var selection = [false, false, false, false, false]
 
+    @State var disableProgression = false
+    
     var body: some View {
         VStack {
-            Spacer()
-            chessBoard
-            Spacer()
+            Text("Choose your game mode:")
+            Toggle(isOn: $usingFavourites) {
+                Text(usingFavourites ? "Revise From Favourites" : "Revise From Opening Books")
+            }
+            .toggleStyle(.button)
+            HStack {
+                radioButton(index: 0, text: "A")
+                radioButton(index: 1, text: "B")
+                radioButton(index: 2, text: "C")
+                radioButton(index: 3, text: "D")
+                radioButton(index: 4, text: "E")
+            }
+            .opacity(usingFavourites ? 0.0 : 1.0)
             Button {
-                chessBoard.resetState()
-                if let moves = openings[index].makePlayableLine() {
-                    for move in moves {
-                        chessBoard.makeTransition(move)
+                if usingFavourites || !selection.allSatisfy({ !$0 }) {
+                    disableProgression = true
+                    Task {
+                        var bookList: [OpeningBook] = []
+                        for i in 0..<selection.count {
+                            let book = OpeningBook.from(number: i)
+                            if selection[i] && book != nil {
+                                bookList.append(book!)
+                            }
+                        }
+                        if usingFavourites {
+                            await openingLines.loadOpenings(favourites: favouriteOpenings.favourites)
+                        } else {
+                            await openingLines.loadOpenings(ecos: bookList)
+                        }
+                        path.append(.game)
                     }
                 }
-                index = (index + 1) % openings.count
             } label: {
-                Text("Index: \(index)")
-                if index < openings.count {
-                    Text("\(openings[index].eco)")
-                    Text("\(openings[index].line)")
-                    Text("\(openings[index].moves)")
-                }
+                Text("Start Game!")
             }
-            Spacer()
-            Button {
-                path.append(.game)
-            } label: {
-                Text("Move to Game")
-            }
-            Spacer()
+            .disabled(disableProgression)
         }
         .padding()
-        .onAppear {
-            Task {
-                openings = await openingNamesFetcher.fetch(.c) ?? []
+    }
+
+    func radioButton(index: Int, text: String) -> some View {
+        VStack {
+            Text("\(text)")
+            Button {
+                if !usingFavourites {
+                    selection[index].toggle()
+                }
+            } label: {
+                Image(systemName: "checkmark.square" + (selection[index] ? ".fill" : ""))
             }
         }
     }
