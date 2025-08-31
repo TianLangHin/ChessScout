@@ -26,12 +26,17 @@ struct GameView: View {
             HStack {
                 Text("Score: \(gameHandler.score)")
                 Spacer()
-                Text("Round: \(gameHandler.currentRound)")
+                Text("Round: \(gameHandler.currentRound)/\(gameHandler.maxRounds)")
             }
             Text("\(gameHandler.opening.eco): \(gameHandler.opening.line)")
+                .font(.callout)
             Text("\(gameHandler.revealedLine.joined(separator: " "))")
+                .font(.footnote)
+            Text("It is \(gameHandler.isWhiteToMove ? "white" : "black") to move.")
+                .fontWeight(.bold)
             Text("\(message)")
             chessboard
+            Spacer()
             HStack {
                 TextField("Enter your answer here", text: $inputAnswer)
                     .textInputAutocapitalization(.never)
@@ -39,6 +44,7 @@ struct GameView: View {
                     .onSubmit {
                         submitAnswer()
                     }
+                Spacer()
                 Spacer()
                 Button {
                     if canAdvance {
@@ -81,16 +87,18 @@ struct GameView: View {
     }
 
     func submitAnswer() {
+        let answer: String
         if gameHandler.isCorrectAnswer(given: inputAnswer) || gameHandler.correctAnswer == nil {
+            answer = inputAnswer
             gameHandler.incrementScore()
             message = "You are correct!"
         } else {
             // Safe, because `nil` is covered in the previous branch.
-            let answer = gameHandler.correctAnswer!
+            answer = gameHandler.correctAnswer!
             message = "The answer was \(answer)."
-            if let move = Move(san: answer, position: chessboard.getState()) {
-                chessboard.makeTransition(move)
-            }
+        }
+        if let move = Move(san: answer, position: chessboard.getState()) {
+            chessboard.makeTransition(move)
         }
         canAdvance = true
     }

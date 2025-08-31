@@ -23,7 +23,7 @@ class GameViewModel: ObservableObject {
     }
 
     var isWhiteToMove: Bool {
-        self.opening.moves.count % 2 == 0
+        self.revealedLine.count % 2 == 0
     }
 
     var isGameOver: Bool {

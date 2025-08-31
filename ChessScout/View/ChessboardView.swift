@@ -34,7 +34,6 @@ struct ChessboardView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding()
     }
 
     private func boardLayer(squareSize: CGFloat) -> some View {

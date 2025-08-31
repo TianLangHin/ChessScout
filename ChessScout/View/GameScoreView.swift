@@ -16,11 +16,16 @@ struct GameScoreView: View {
     var body: some View {
         VStack {
             Text("You scored \(score) points out of \(rounds) rounds!")
+                .font(.title2)
             Button {
                 path.removeAll()
             } label: {
-                Text("Go all the way back")
+                HStack {
+                    Image(systemName: "chevron.left")
+                    Text("Back to main page")
+                }
             }
+            .buttonStyle(.borderedProminent)
         }
     }
 }

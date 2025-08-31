@@ -49,7 +49,7 @@ class OpeningLinesViewModel: ObservableObject {
         var j = 0
         while i < queryLength && j < stringLength {
             let charAtQuery = query.index(queryStart, offsetBy: i)
-            let charAtString = string.index(stringStart, offsetBy: i)
+            let charAtString = string.index(stringStart, offsetBy: j)
             if query[charAtQuery] == string[charAtString] {
                 i += 1
             }
