@@ -10,9 +10,12 @@ import SwiftUI
 struct GameScoreView: View {
 
     @Binding var path: [GameRouterViewModel.Indicator]
+    @State var score: Int
+    @State var rounds: Int
 
     var body: some View {
         VStack {
+            Text("You scored \(score) points out of \(rounds) rounds!")
             Button {
                 path.removeAll()
             } label: {

@@ -62,7 +62,7 @@ enum OpeningBook: String {
     }
 }
 
-struct NamedOpeningLine: Codable {
+struct NamedOpeningLine: Codable, Hashable {
     let eco: String
     let line: String
     let moves: [String]

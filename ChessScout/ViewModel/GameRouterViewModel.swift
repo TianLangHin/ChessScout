@@ -18,18 +18,19 @@ class GameRouterViewModel: Routable {
         switch indicator {
         case .select:
             GameSelectView(path: path)
-        case .game:
-            GameView(path: path)
+        case .game(let rounds):
+            GameView(path: path, rounds: rounds)
                 .navigationBarBackButtonHidden()
-        case .score:
-            GameScoreView(path: path)
+        case .score(let score, let rounds):
+            GameScoreView(path: path, score: score, rounds: rounds)
                 .navigationBarBackButtonHidden()
         }
     }
-    enum GameState {
+
+    enum GameState: Hashable {
         case select
-        case game
-        case score
+        case game(Int)
+        case score(Int, Int)
     }
 }
 

@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct FavouriteOpenings: Saveable {
+    typealias IdentifiableOpening = IdWrapper<NamedOpeningLine>
     private static let saveKey = "favouriteOpenings"
     
-    var openings: [NamedOpeningLine]
-
+    var openings: [IdentifiableOpening]
+    
     static func readFromStore() -> Self? {
         let jsonDecoder = JSONDecoder()
         guard let storedValue = UserDefaults.standard.value(forKey: saveKey) as? Data else {
@@ -20,13 +21,22 @@ struct FavouriteOpenings: Saveable {
         guard let data = try? jsonDecoder.decode([NamedOpeningLine].self, from: storedValue) else {
             return nil
         }
-        return FavouriteOpenings(openings: data)
+        return FavouriteOpenings(openings: data.map({ IdWrapper(data: $0) }))
     }
-
+    
     func saveToStore() {
         let jsonEncoder = JSONEncoder()
-        if let encodedData = try? jsonEncoder.encode(self) {
+        let openingData = self.openings.map({ $0.data })
+        if let encodedData = try? jsonEncoder.encode(openingData) {
             UserDefaults.standard.set(encodedData, forKey: Self.saveKey)
         }
+    }
+    
+    mutating func addOpening(opening: NamedOpeningLine) {
+        self.openings.append(IdWrapper(data: opening))
+    }
+
+    mutating func removeOpenings(at offsets: IndexSet) {
+        self.openings.remove(atOffsets: offsets)
     }
 }

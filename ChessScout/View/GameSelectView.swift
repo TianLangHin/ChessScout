@@ -18,7 +18,9 @@ struct GameSelectView: View {
     @State var selection = [false, false, false, false, false]
 
     @State var disableProgression = false
-    
+
+    @State var numberOfRounds = 1.0
+
     var body: some View {
         VStack {
             Text("Choose your game mode:")
@@ -34,12 +36,17 @@ struct GameSelectView: View {
                 radioButton(index: 4, text: "E")
             }
             .opacity(usingFavourites ? 0.0 : 1.0)
+            Text("Number of Rounds: \(Int(numberOfRounds))")
+                .padding()
+            Slider(value: $numberOfRounds, in: 1...10, step: 1)
+                .padding()
             Button {
                 if usingFavourites || !selection.allSatisfy({ !$0 }) {
                     disableProgression = true
                     Task {
                         if usingFavourites {
-                            await openingLines.loadOpenings(favourites: favouriteOpenings.openings)
+                            let openings = favouriteOpenings.openings.map({ $0.data })
+                            await openingLines.loadOpenings(favourites: openings)
                         } else {
                             var bookList: [OpeningBook] = []
                             for i in 0..<selection.count {
@@ -50,7 +57,7 @@ struct GameSelectView: View {
                             }
                             await openingLines.loadOpenings(ecos: bookList)
                         }
-                        path.append(.game)
+                        path.append(.game(Int(numberOfRounds)))
                     }
                 }
             } label: {
