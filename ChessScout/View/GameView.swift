@@ -11,30 +11,27 @@ import SwiftUI
 struct GameView: View {
 
     @EnvironmentObject var openingLines: OpeningLinesViewModel
+    @ObservedObject var gameHandler: GameViewModel = GameViewModel()
 
     @Binding var path: [GameRouterViewModel.Indicator]
     @State var rounds: Int
-    
+
     @State var chessboard = ChessboardView()
-    @State var roundsElapsed = 0
-    @State var score = 0
     @State var canAdvance = false
-    @State var correctAnswer: Move? = nil
     @State var inputAnswer = ""
-    @State var message = ""
-    @State var openingName = ""
+    @State var message = "What is the correct move?"
 
     var body: some View {
         VStack {
             HStack {
-                Text("Score: \(score)")
+                Text("Score: \(gameHandler.score)")
                 Spacer()
-                Text("Round: \(roundsElapsed + 1)")
+                Text("Round: \(gameHandler.currentRound)")
             }
-            chessboard
-            Text("\(openingName)")
-                .padding()
+            Text("\(gameHandler.opening.eco): \(gameHandler.opening.line)")
+            Text("\(gameHandler.revealedLine.joined(separator: " "))")
             Text("\(message)")
+            chessboard
             HStack {
                 TextField("Enter your answer here", text: $inputAnswer)
                     .textInputAutocapitalization(.never)
@@ -51,7 +48,11 @@ struct GameView: View {
                     }
                 } label: {
                     HStack {
-                        Text(canAdvance ? "Next Question" : "Submit")
+                        if canAdvance {
+                            Text(gameHandler.isFinalAdvancement ? "Finish Game" : "Next Question")
+                        } else {
+                            Text("Confirm Answer")
+                        }
                         Image(systemName: "chevron.right")
                     }
                 }
@@ -59,49 +60,48 @@ struct GameView: View {
         }
         .padding()
         .onAppear {
-            advanceQuestion(increment: false)
+            let firstOpening = openingLines.getRandomOpening()
+            gameHandler.initialise(rounds: rounds, opening: firstOpening)
+            setupBoard(opening: firstOpening)
         }
-        .onChange(of: roundsElapsed) {
-            if roundsElapsed == rounds {
-                path.append(.score(score, rounds))
+        .onChange(of: gameHandler.isGameOver) {
+            if gameHandler.isGameOver {
+                path.append(.score(gameHandler.score, gameHandler.maxRounds))
+            }
+        }
+    }
+
+    func setupBoard(opening: NamedOpeningLine) {
+        chessboard.resetState()
+        if let line = opening.makePlayableLine() {
+            for move in line.dropLast() {
+                chessboard.makeTransition(move)
             }
         }
     }
 
     func submitAnswer() {
-        let correctString = correctAnswer?.san ?? ""
-        if inputAnswer == correctString {
-            score += 1
+        if gameHandler.isCorrectAnswer(given: inputAnswer) || gameHandler.correctAnswer == nil {
+            gameHandler.incrementScore()
             message = "You are correct!"
         } else {
-            message = "The answer was \(correctString)."
-        }
-        if let move = correctAnswer {
-            chessboard.makeTransition(move)
+            // Safe, because `nil` is covered in the previous branch.
+            let answer = gameHandler.correctAnswer!
+            message = "The answer was \(answer)."
+            if let move = Move(san: answer, position: chessboard.getState()) {
+                chessboard.makeTransition(move)
+            }
         }
         canAdvance = true
     }
 
-    func advanceQuestion(increment: Bool = true) {
-        let randomNumber = Int.random(in: 0..<openingLines.openingLines.count)
-        setBoardByLine(index: randomNumber)
-        if increment {
-            roundsElapsed += 1
-        }
-        message = ""
+    func advanceQuestion() {
+        let newOpening = openingLines.getRandomOpening()
+        setupBoard(opening: newOpening)
+        gameHandler.refreshOpening(opening: newOpening)
+        gameHandler.advanceRound()
+        message = "What is the correct move?"
         inputAnswer = ""
         canAdvance = false
-    }
-
-    func setBoardByLine(index: Int) {
-        chessboard.resetState()
-        let opening = openingLines.openingLines[index]
-        if let line = opening.makePlayableLine() {
-            openingName = "\(opening.eco): \(opening.line)\n\(line.dropLast().map({ $0.san }).joined(separator: " "))"
-            for move in line.dropLast() {
-                chessboard.makeTransition(move)
-            }
-            correctAnswer = line.last
-        }
     }
 }

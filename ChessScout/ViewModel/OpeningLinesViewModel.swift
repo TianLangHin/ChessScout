@@ -23,7 +23,12 @@ class OpeningLinesViewModel: ObservableObject {
     func loadOpenings(favourites: [NamedOpeningLine]) async {
         openingLines = favourites
     }
-    
+
+    func getRandomOpening() -> NamedOpeningLine {
+        let randomIndex = Int.random(in: 0..<self.openingLines.count)
+        return self.openingLines[randomIndex]
+    }
+
     func filterOn(query: String) -> [NamedOpeningLine] {
         if query == "" {
             return self.openingLines
