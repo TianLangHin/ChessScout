@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GameSelectView: View {
     @EnvironmentObject var openingLines: OpeningLinesViewModel
-    @EnvironmentObject var favouriteOpenings: FavouriteOpeningsViewModel
+    @EnvironmentObject var favourites: FavouriteOpeningsViewModel
 
     @Binding var path: [GameRouterViewModel.Indicator]
     @State var openings: [NamedOpeningLine] = []
@@ -24,28 +24,40 @@ struct GameSelectView: View {
     var body: some View {
         VStack {
             Text("Choose your game mode:")
-            Toggle(isOn: $usingFavourites) {
-                Text(usingFavourites ? "Revise From Favourites" : "Revise From Opening Books")
+                .font(.title)
+            VStack {
+                Toggle(isOn: $usingFavourites) {
+                    Text(usingFavourites ? "Revise From Favourites" : "Revise From Opening Books")
+                }
+                .toggleStyle(.button)
+                HStack {
+                    radioButton(index: 0, text: "A")
+                    radioButton(index: 1, text: "B")
+                    radioButton(index: 2, text: "C")
+                    radioButton(index: 3, text: "D")
+                    radioButton(index: 4, text: "E")
+                }
+                .opacity(usingFavourites ? 0.0 : 1.0)
             }
-            .toggleStyle(.button)
-            HStack {
-                radioButton(index: 0, text: "A")
-                radioButton(index: 1, text: "B")
-                radioButton(index: 2, text: "C")
-                radioButton(index: 3, text: "D")
-                radioButton(index: 4, text: "E")
+            .padding()
+            VStack {
+                Text("Number of Rounds: \(Int(numberOfRounds))")
+                Slider(value: $numberOfRounds, in: 1...10, step: 1) {
+                } minimumValueLabel: {
+                    Text("1")
+                } maximumValueLabel: {
+                    Text("10")
+                }
             }
-            .opacity(usingFavourites ? 0.0 : 1.0)
-            Text("Number of Rounds: \(Int(numberOfRounds))")
-                .padding()
-            Slider(value: $numberOfRounds, in: 1...10, step: 1)
-                .padding()
+            .padding()
             Button {
-                if usingFavourites || !selection.allSatisfy({ !$0 }) {
+                let canUseFavourites = favourites.openings.count != 0
+                let canUseBooks = !selection.allSatisfy({ !$0 })
+                if ((usingFavourites && canUseFavourites) || canUseBooks) {
                     disableProgression = true
                     Task {
                         if usingFavourites {
-                            let openings = favouriteOpenings.openings.map({ $0.data })
+                            let openings = favourites.openings.map({ $0.data })
                             await openingLines.loadOpenings(favourites: openings)
                         } else {
                             var bookList: [OpeningBook] = []
@@ -80,4 +92,10 @@ struct GameSelectView: View {
             }
         }
     }
+}
+
+#Preview {
+    GameSelectView(path: .constant([]))
+        .environmentObject(OpeningLinesViewModel())
+        .environmentObject(FavouriteOpeningsViewModel())
 }

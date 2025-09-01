@@ -25,8 +25,10 @@ struct GameView: View {
         VStack {
             HStack {
                 Text("Score: \(gameHandler.score)")
+                    .fontWeight(.bold)
                 Spacer()
                 Text("Round: \(gameHandler.currentRound)/\(gameHandler.maxRounds)")
+                    .fontWeight(.bold)
             }
             Text("\(gameHandler.opening.eco): \(gameHandler.opening.line)")
                 .font(.callout)

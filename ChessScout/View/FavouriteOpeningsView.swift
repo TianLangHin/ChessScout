@@ -17,18 +17,22 @@ struct FavouriteOpeningsView: View {
     var body: some View {
         VStack {
             List {
-                ForEach(favouriteOpenings.favourites.openings) { idOpening in
-                    let opening = idOpening.data
-                    HStack {
-                        Text("\(opening.eco)")
-                            .fontWeight(.bold)
-                        VStack(alignment: .leading) {
-                            Text("\(opening.line)")
-                            Text("\(opening.moves.joined(separator: " "))")
+                if favouriteOpenings.openings.isEmpty {
+                    Text("No favourite openings yet!")
+                } else {
+                    ForEach(favouriteOpenings.openings) { idOpening in
+                        let opening = idOpening.data
+                        HStack {
+                            Text("\(opening.eco)")
+                                .fontWeight(.bold)
+                            VStack(alignment: .leading) {
+                                Text("\(opening.line)")
+                                Text("\(opening.moves.joined(separator: " "))")
+                            }
                         }
                     }
+                    .onDelete(perform: favouriteOpenings.removeOpenings)
                 }
-                .onDelete(perform: favouriteOpenings.removeOpenings)
             }
             NavigationLink("Add Opening") {
                 OpeningSelectorView()

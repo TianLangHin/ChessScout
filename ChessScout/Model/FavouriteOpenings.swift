@@ -41,8 +41,4 @@ struct FavouriteOpenings: Saveable {
     mutating func removeOpenings(at offsets: IndexSet) {
         self.openings.remove(atOffsets: offsets)
     }
-
-    mutating func moveOpenings(from source: IndexSet, to destination: Int) {
-        self.openings.move(fromOffsets: source, toOffset: destination)
-    }
 }
