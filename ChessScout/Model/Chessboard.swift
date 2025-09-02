@@ -10,7 +10,6 @@ import SwiftUI
 
 @Observable
 class Chessboard {
-
     var board: Board
     var pieceList: [ChessPiece]
 

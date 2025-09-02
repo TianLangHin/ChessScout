@@ -16,7 +16,7 @@ struct GameView: View {
     @Binding var path: [GameRouterViewModel.Indicator]
     @State var rounds: Int
 
-    @State var chessboard = ChessboardView()
+    @State var boardView = ChessboardView()
     @State var canAdvance = false
     @State var inputAnswer = ""
     @State var message = "What is the correct move?"
@@ -37,7 +37,7 @@ struct GameView: View {
             Text("It is \(gameHandler.isWhiteToMove ? "white" : "black") to move.")
                 .fontWeight(.bold)
             Text("\(message)")
-            chessboard
+            boardView
             Spacer()
             HStack {
                 TextField("Enter your answer here", text: $inputAnswer)
@@ -80,10 +80,10 @@ struct GameView: View {
     }
 
     func setupBoard(opening: NamedOpeningLine) {
-        chessboard.resetState()
+        boardView.resetState()
         if let line = opening.makePlayableLine() {
             for move in line.dropLast() {
-                chessboard.makeTransition(move)
+                boardView.makeTransition(move)
             }
         }
     }
@@ -99,8 +99,8 @@ struct GameView: View {
             answer = gameHandler.correctAnswer!
             message = "The answer was \(answer)."
         }
-        if let move = Move(san: answer, position: chessboard.getState()) {
-            chessboard.makeTransition(move)
+        if let move = Move(san: answer, position: boardView.getState()) {
+            boardView.makeTransition(move)
         }
         canAdvance = true
     }

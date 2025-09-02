@@ -9,9 +9,9 @@ import SwiftUI
 
 class OpeningLinesViewModel: ObservableObject {
     @Published var openingLines: [NamedOpeningLine] = []
-    
+
     let openingNamesFetcher = OpeningNamesFetcher()
-    
+
     func loadOpenings(ecos: [OpeningBook]) async {
         for openingBook in ecos {
             if let openings = await openingNamesFetcher.fetch(openingBook) {
@@ -19,7 +19,7 @@ class OpeningLinesViewModel: ObservableObject {
             }
         }
     }
-    
+
     func loadOpenings(favourites: [NamedOpeningLine]) async {
         openingLines = favourites
     }

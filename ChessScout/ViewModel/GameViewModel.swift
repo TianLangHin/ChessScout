@@ -8,7 +8,7 @@
 import SwiftUI
 
 class GameViewModel: ObservableObject {
-    
+
     @Published var maxRounds: Int
     @Published var score: Int
     @Published var currentRound: Int

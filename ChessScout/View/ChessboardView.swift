@@ -9,9 +9,8 @@ import ChessKit
 import SwiftUI
 
 struct ChessboardView: View {
-
-    let lightSquare = Color.white
-    let darkSquare = Color.brown
+    let light = Color.white
+    let dark = Color.brown
 
     @State var board = ChessboardViewModel()
 
@@ -26,9 +25,11 @@ struct ChessboardView: View {
                     ForEach($board.pieceList) { $chessPiece in
                         let stepsX = CGFloat(chessPiece.squareNumber % 8)
                         let stepsY = CGFloat(7 - chessPiece.squareNumber / 8)
+                        let xCoord = offset + stepsX * step
+                        let yCoord = offset + stepsY * step
                         ChessPieceView(chessPiece: $chessPiece)
                             .frame(width: step, height: step)
-                            .offset(x: offset + stepsX * step, y: offset + stepsY * step)
+                            .offset(x: xCoord, y: yCoord)
                     }
                 }
             }
@@ -41,8 +42,9 @@ struct ChessboardView: View {
             ForEach((0..<8).reversed(), id: \.self) { row in
                 HStack(spacing: 0) {
                     ForEach(0..<8, id: \.self) { column in
+                        let colour = (row + column) % 2 == 0 ? dark : light
                         Rectangle()
-                            .fill((row + column) % 2 == 0 ? darkSquare : lightSquare)
+                            .fill(colour)
                             .frame(width: squareSize, height: squareSize)
                     }
                 }

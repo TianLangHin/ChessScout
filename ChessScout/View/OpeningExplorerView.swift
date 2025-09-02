@@ -127,11 +127,11 @@ struct OpeningExplorerView: View {
         }
     }
 
-    private func makeMove(moveSan: String, clearFuture: Bool = true) {
+    private func makeMove(moveSan: String, clearFuture clear: Bool = true) {
         if let move = Move(san: moveSan, position: boardView.getState()) {
             if boardView.makeTransition(move) {
-                let newState = boardView.getState()
-                openingExplorer.makeMove(move: move, newState: newState, clearFuture: clearFuture)
+                openingExplorer.makeMove(
+                    move: move, newState: boardView.getState(), clearFuture: clear)
                 updateMoveList()
             }
         }

@@ -13,7 +13,7 @@ struct GameSelectView: View {
 
     @Binding var path: [GameRouterViewModel.Indicator]
     @State var openings: [NamedOpeningLine] = []
-    
+
     @State var usingFavourites = false
     @State var selection = [false, false, false, false, false]
 
@@ -30,12 +30,16 @@ struct GameSelectView: View {
                     Text(usingFavourites ? "Revise From Favourites" : "Revise From Opening Books")
                 }
                 .toggleStyle(.button)
-                HStack {
-                    radioButton(index: 0, text: "A")
-                    radioButton(index: 1, text: "B")
-                    radioButton(index: 2, text: "C")
-                    radioButton(index: 3, text: "D")
-                    radioButton(index: 4, text: "E")
+                VStack {
+                    Text("Select ECO Opening Books to train on:")
+                        .fontWeight(.bold)
+                    HStack {
+                        radioButton(index: 0, text: "A")
+                        radioButton(index: 1, text: "B")
+                        radioButton(index: 2, text: "C")
+                        radioButton(index: 3, text: "D")
+                        radioButton(index: 4, text: "E")
+                    }
                 }
                 .opacity(usingFavourites ? 0.0 : 1.0)
             }
@@ -88,7 +92,8 @@ struct GameSelectView: View {
                     selection[index].toggle()
                 }
             } label: {
-                Image(systemName: "checkmark.square" + (selection[index] ? ".fill" : ""))
+                let suffix = selection[index] ? ".fill" : ""
+                Image(systemName: "checkmark.square" + suffix)
             }
         }
     }

@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 class OpeningStatViewModel {
     typealias OpeningStat = LichessOpeningData.MoveStats
-    
+
     let visibleThreshold = 8
  
     func intuitivePercentage(_ openingStat: OpeningStat) -> (Int, Int, Int) {
@@ -36,5 +36,5 @@ class OpeningStatViewModel {
             }
         }
         return (whiteRatio, drawRatio, blackRatio)
-    }   
+    }
 }

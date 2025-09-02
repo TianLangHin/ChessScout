@@ -66,7 +66,7 @@ struct NamedOpeningLine: Codable, Equatable, Hashable {
     let eco: String
     let line: String
     let moves: [String]
-    
+
     func makePlayableLine(position: Position = .standard) -> [Move]? {
         var moveList: [Move] = []
         var board = Board(position: position)
