@@ -15,7 +15,7 @@ struct GameScoreView: View {
 
     var body: some View {
         VStack {
-            Text("You scored \(score) points out of \(rounds) rounds!")
+            Text("You scored ^[\(score) point](inflect: true) out of \(rounds) rounds!")
                 .font(.title2)
             Button {
                 path.removeAll()

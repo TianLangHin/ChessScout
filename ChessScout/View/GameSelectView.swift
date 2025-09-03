@@ -26,10 +26,12 @@ struct GameSelectView: View {
             Text("Choose your game mode:")
                 .font(.title)
             VStack {
-                Toggle(isOn: $usingFavourites) {
+                Button {
+                    usingFavourites.toggle()
+                } label: {
                     Text(usingFavourites ? "Revise From Favourites" : "Revise From Opening Books")
                 }
-                .toggleStyle(.button)
+                .buttonStyle(.bordered)
                 VStack {
                     Text("Select ECO Opening Books to train on:")
                         .fontWeight(.bold)
