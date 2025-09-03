@@ -8,6 +8,11 @@
 import ChessKit
 import SwiftUI
 
+/// The `ChessboardView` struct displays a particular chess position,
+/// with piece animations when moves are made.
+/// It is then also extended to conform to the `Navigable` protocol
+/// to allow other views to contain this one without having to
+/// copy across its state logic.
 struct ChessboardView: View {
     let light = Color.white
     let dark = Color.brown
@@ -33,7 +38,7 @@ struct ChessboardView: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity)
         }
     }
 

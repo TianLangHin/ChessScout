@@ -18,6 +18,7 @@ struct GameSelectView: View {
     @State var selection = [false, false, false, false, false]
 
     @State var disableProgression = false
+    @State var errorMessageOpacity = 0.0
 
     @State var numberOfRounds = 1.0
 
@@ -79,10 +80,14 @@ struct GameSelectView: View {
                         path.append(.game(Int(numberOfRounds)))
                     }
                 }
+                errorMessageOpacity = 1.0
             } label: {
                 Text("Start Game!")
             }
             .disabled(disableProgression)
+            errorMessage()
+                .padding()
+                .opacity(errorMessageOpacity)
         }
         .padding()
     }
@@ -97,6 +102,29 @@ struct GameSelectView: View {
             } label: {
                 let suffix = selection[index] ? ".fill" : ""
                 Image(systemName: "checkmark.square" + suffix)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func errorMessage() -> some View {
+        let canUseFavourites = favourites.openings.count != 0
+        let canUseBooks = !selection.allSatisfy({ !$0 })
+        if usingFavourites {
+            if canUseFavourites {
+                Text("You may proceed!")
+                    .foregroundStyle(.green)
+            } else {
+                Text("Your favourites list is empty!")
+                    .foregroundStyle(.red)
+            }
+        } else {
+            if canUseBooks {
+                Text("You may proceed!")
+                    .foregroundStyle(.green)
+            } else {
+                Text("You need to select at least 1 book!")
+                    .foregroundStyle(.red)
             }
         }
     }

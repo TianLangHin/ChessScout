@@ -47,7 +47,6 @@ struct GameView: View {
                         submitAnswer()
                     }
                 Spacer()
-                Spacer()
                 Button {
                     if canAdvance {
                         advanceQuestion()
@@ -65,6 +64,7 @@ struct GameView: View {
                     }
                 }
             }
+            .padding()
         }
         .padding()
         .onAppear {
