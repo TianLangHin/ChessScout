@@ -7,6 +7,8 @@
 
 import ChessKit
 
+/// This adds on a function to convert a `Move` instance (from `ChessKit`) to UCI notation,
+/// which allows it to be used in various APIs such as the Lichess API.
 extension Move {
     func uci() -> String {
         let start = self.start.notation
