@@ -31,6 +31,7 @@ struct GameSelectView: View {
                 } label: {
                     Text(usingFavourites ? "Revise From Favourites" : "Revise From Opening Books")
                 }
+                .padding()
                 .buttonStyle(.bordered)
                 VStack {
                     Text("Select ECO Opening Books to train on:")

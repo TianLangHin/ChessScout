@@ -83,6 +83,7 @@ struct OpeningExplorerView: View {
         }
         .onAppear(perform: {
             boardView.resetState()
+            openingExplorer.reset()
             updateMoveList()
         })
         .onChange(of: openingExplorer.useMastersDatabase, {

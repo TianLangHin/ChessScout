@@ -16,9 +16,21 @@ class OpeningExplorerViewModel {
 
     let openingFetcher = LichessOpeningFetcher()
 
-    var useMastersDatabase = true
-    var history: [WrappedGameState] = []
-    var future: [WrappedGameState] = []
+    var useMastersDatabase: Bool
+    var history: [WrappedGameState]
+    var future: [WrappedGameState]
+
+    init() {
+        self.useMastersDatabase = true
+        self.history = []
+        self.future = []
+    }
+
+    func reset() {
+        self.useMastersDatabase = true
+        self.history = []
+        self.future = []
+    }
 
     func makeMove(move: Move, newState: Position, clearFuture: Bool = true) {
         let state = (move, newState)
