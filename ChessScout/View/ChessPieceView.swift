@@ -11,8 +11,8 @@ struct ChessPieceView: View {
     @Binding var chessPiece: ChessPiece
 
     var body: some View {
-        let colour = chessPiece.piece.color.rawValue
-        let pieceType = chessPiece.piece.kind == .pawn ? "p" : chessPiece.piece.kind.notation.lowercased()
+        let colour = chessPiece.data.color.rawValue
+        let pieceType = chessPiece.data.kind == .pawn ? "p" : chessPiece.data.kind.notation.lowercased()
         Image("\(colour)\(pieceType)").resizable().scaledToFill()
     }
 }
