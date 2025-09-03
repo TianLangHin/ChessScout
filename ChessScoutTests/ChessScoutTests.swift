@@ -42,7 +42,7 @@ final class ChessScoutTests: XCTestCase {
         let position = Position(fen: finalPositionFEN)
         XCTAssertNotNil(position, "The given FEN is known to be valid")
         XCTAssertEqual(chessBoard.board.position, position!, "The end position must match the FEN")
-        let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.piece }))
+        let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.data }))
         let positionPieceSet = Set(position!.pieces)
         XCTAssertEqual(trackedPieceSet, positionPieceSet, "The ID-tracked piece set must match the position piece set")
     }
@@ -74,7 +74,7 @@ final class ChessScoutTests: XCTestCase {
         let position = Position(fen: finalPositionFEN)
         XCTAssertNotNil(position, "The given FEN is known to be valid")
         XCTAssertEqual(chessBoard.board.position, position!, "The end position must match the FEN")
-        let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.piece }))
+        let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.data }))
         let positionPieceSet = Set(position!.pieces)
         XCTAssertEqual(trackedPieceSet, positionPieceSet, "The ID-tracked piece set must match the position piece set")
     }
@@ -100,7 +100,7 @@ final class ChessScoutTests: XCTestCase {
         let position = Position(fen: finalPositionFEN)
         XCTAssertNotNil(position, "The given FEN is known to be valid")
         XCTAssertEqual(chessBoard.board.position, position!, "The end position must match the FEN")
-        let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.piece }))
+        let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.data }))
         let positionPieceSet = Set(position!.pieces)
         XCTAssertEqual(trackedPieceSet, positionPieceSet, "The ID-tracked piece set must match the position piece set")
     }
@@ -126,7 +126,7 @@ final class ChessScoutTests: XCTestCase {
             let position = Position(fen: fen)
             XCTAssertNotNil(position, "The given FEN is known to be valid")
             chessBoard.setPosition(position: position!)
-            let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.piece }))
+            let trackedPieceSet = Set(chessBoard.pieceList.map({ $0.data }))
             let positionPieceSet = Set(position!.pieces)
             XCTAssertEqual(trackedPieceSet, positionPieceSet, "The ID-tracked piece set must match the position piece set")
         }
