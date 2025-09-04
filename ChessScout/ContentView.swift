@@ -14,7 +14,6 @@ struct ContentView: View {
     @State var gameRouter = GameRouterViewModel()
 
     @ObservedObject var openingLines = OpeningLinesViewModel()
-    @ObservedObject var allOpeningLines = OpeningLinesViewModel()
     @ObservedObject var favouriteOpenings = FavouriteOpeningsViewModel()
 
     var body: some View {
@@ -48,7 +47,6 @@ struct ContentView: View {
                     NavigationLink("Favourite Openings") {
                         FavouriteOpeningsView()
                             .environmentObject(favouriteOpenings)
-                            .environmentObject(allOpeningLines)
                             .navigationTitle("Favourite Openings")
                     }
                     .buttonStyle(.borderedProminent)
