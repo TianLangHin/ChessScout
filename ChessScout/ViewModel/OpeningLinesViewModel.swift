@@ -15,13 +15,17 @@ class OpeningLinesViewModel: ObservableObject {
     func loadOpenings(ecos: [OpeningBook]) async {
         for openingBook in ecos {
             if let openings = await openingNamesFetcher.fetch(openingBook) {
-                openingLines.append(contentsOf: openings.filter({ !$0.eco.contains("00") }))
+                await MainActor.run {
+                    openingLines.append(contentsOf: openings.filter({ !$0.eco.contains("00") }))
+                }
             }
         }
     }
 
     func loadOpenings(favourites: [NamedOpeningLine]) async {
-        openingLines = favourites
+        await MainActor.run {
+            openingLines = favourites
+        }
     }
 
     func getRandomOpening() -> NamedOpeningLine {
