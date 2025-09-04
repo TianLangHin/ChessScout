@@ -7,12 +7,18 @@
 
 import SwiftUI
 
+/// This ViewModel handles the logic of making sure that an opening statistic
+/// fetched from the Lichess API gives total win-rate percentages that add up to 100%.
+/// This makes it intuitive for users and also aligns all the rectangles in the UI.
 @Observable
 class OpeningStatViewModel {
+    // Type alias is made only for convenience here.
     typealias OpeningStat = LichessOpeningData.MoveStats
 
+    // The threshold below which the percentage is deemed too wide to fit in the rectangle.
     let visibleThreshold = 8
- 
+
+    // The main function through which the percentages are managed.
     func intuitivePercentage(_ openingStat: OpeningStat) -> (Int, Int, Int) {
         let white = openingStat.white
         let draws = openingStat.draws
